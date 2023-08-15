@@ -2,9 +2,8 @@
 #basic python port scanner that doesn't require nmap; utilizes socket api and regular expression modules
 #if you want to add additional functionallity, I would check out: https://docs.python.org/3/library/socket.html
 import socket
+import ipaddress
 import re
-#regular expression pattern for the IPv4 address
-ip_add_pattern = re.compile("^(?:[0-9]{1,3}\.)({3}[0-9]{1,3}$")
 #regular expression pattern for the port number import
 port_range_pattern = re.compile("([0-9]+)-([0-9]+)")
 #our minimum and maximum port range
@@ -14,31 +13,33 @@ port_max = 65535
 #creation of an empty array and then basic input from user on what ip address they want to scan
 open_ports = []
 while True:
-    ip_add_entered = input("\nEnter the ip address that you want to scan: ")
-    if ip_add_pattern.search(ip_add_pattern):
-    print(f"{ip_add_entered} is valid")
-    break
+    try:
+        ip_add_entered = input("\nEnter IP address you wish to scan:")
+        print("Valid ip")
+        break
+    except:
+        print("Invalid IP")
+
 while True:
 #be delicate with the scanner because it doesn't use multithreaded (I haven't got around to that yet), so be cautious with scan limits
-print("Yo dawg enter the ports you want to scan with the format of <integer>-<integer> (so like 20-200)")
-port_range = input("Enter port range: ")
-port_range_valid = port_range_pattern.search(port_range.replace(" ",""))
-if port_range_valid:
-    port_min = int(port_range_valid.group(1))
-    port_max = int(port_range_valid.group(2))
-    break
+    print("Yo dawg enter the ports you want to scan with the format of <integer>-<integer> (so like 20-200)")
+    port_range = input("Enter port range: ")
+    port_range_valid = port_range_pattern.search(port_range.replace(" ",""))
+    if port_range_valid:
+        port_min = int(port_range_valid.group(1))
+        port_max = int(port_range_valid.group(2))
+        break
+
 #Now we perform the actual scan
-for port in range(port_min, port_max + 1):    
+for port in range(port_min, port_max + 1):
     try:
-        #socket object creation; AF_INET is a part of the socket api that pairs as (host, port) where host can be a string representing either a hostname like 'example.org' or an IPv4 address
-        #because some of the behaviors in AF_INET are not compatabile in IPv6, you can't you it with this port scanner (although, if you switch over to AF_INET6, you could)
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        #setting a timeout of .5 of a second
-        s.settimeout(0.5)
-        s.connect((ip_add_entered, port))
-        open_ports.append(port)
-        except:
+#socket object creation; AF_INET is a part of the socket api that pairs as (host, port) where host can be a string representing either a hostname like 'example.org' or an IPv4 address
+#because some of the behaviors in AF_INET are not compatabile in IPv6, you can't you it with this port scanner (although, if you switch over to AF_INET6, you could)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            s.connect((ip_add_entered, port))
+            open_ports.append(port)
+    except:
         pass
 for port in open_ports:
     print(f"Port {port} is open on {ip_add_entered}.")
-    
