@@ -10,4 +10,3 @@ while 1: #loops sending packets to the port until you end program
     sock.sendto(bytes,(ip,port))
 print ("Sent %s amount of packets to %s at port %s.") % (sent,ip,port)
 sent= sent + 1
-#don't sweat making an ending to this because that kind of defeats the purpose don't it?
